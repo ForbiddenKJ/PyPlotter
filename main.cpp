@@ -12,16 +12,17 @@ public:
   Vector2 graphDimention;
 
   void DrawGraph(){
-    CalculatePoints(-10, 10);
+    CalculatePoints(-10, 5);
     PlotPoints();
   }
 
 private:
   void PlotPoints(){
-
-    for (int i = 0; i < points.size()-1; i++){
-      DrawLineEx(points[i], points[i+1], 4.0f, RAYWHITE);
+    BeginDrawing();
+    for (int i = 0; i < (int)points.size()-1; i++){
+      DrawLineEx(points[i], points[i+1], 2.0f, RAYWHITE);
     }
+    EndDrawing();
 
   }
 
@@ -46,6 +47,19 @@ public:
   void StartWindow(const char* WINDOWNAME, const int SCREENWIDTH, const int SCREENHEIGHT){
     InitWindow(SCREENWIDTH, SCREENHEIGHT, WINDOWNAME);
     SetTargetFPS(60);
+
+    BeginDrawing();
+    ClearBackground(BACKGROUND);
+    EndDrawing();
+  }
+
+  void KeepWindowAlive(){
+    while (!WindowShouldClose()){
+      BeginDrawing();
+      EndDrawing();
+    }
+
+    CloseWindow();
   }
 
 };
@@ -57,16 +71,9 @@ int main(){
 
   Graph basicGraph;
 
-  while (!WindowShouldClose()){
-    BeginDrawing();
+  basicGraph.DrawGraph();
 
-    ClearBackground(BACKGROUND);
+  plotter.KeepWindowAlive();
 
-    basicGraph.DrawGraph();
-
-    EndDrawing();
-
-  }
-
-  CloseWindow();
+  return 0;
 }
