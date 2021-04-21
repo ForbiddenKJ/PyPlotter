@@ -15,7 +15,7 @@ public:
   Vector2 origin = {0.0f, 0.0f};
 
   void DrawGraph(){
-    CalculatePoints(-10, 6);
+    CalculatePoints(-5, 5);
     DrawGraphBox();
     PlotPoints();
   }
@@ -39,9 +39,9 @@ private:
 
     bool boundsDefined = false;
 
-    for (int i = minX; i < maxX; i+=step){
+    for (int i = minX; i < maxX+1; i+=step){
       float x = i;
-      float y = -(pow(2,x)); // TODO: Customise Equation
+      float y = -(pow(x,2)); // TODO: Customise Equation
 
       Vector2 pointPosition = {(x*10)+position.x, (y*10)+position.y};
 
