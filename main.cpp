@@ -21,7 +21,9 @@ public:
   }
 
 private:
-  Vector2 graphDimention;
+  Vector2 graphDimention = {0.0f, 0.0f};
+  float lowestY = 0.0f;
+  float highestY = 0.0f;
 
   void PlotPoints(){
     BeginDrawing();
@@ -34,7 +36,8 @@ private:
 
   void CalculatePoints(int minX, int maxX, int step = 1, int yCap = 0){
     points.clear();
-    graphDimention.x = ((abs(minX)+abs(maxX))*10)/step;
+
+    bool boundsDefined = false;
 
     for (int i = minX; i < maxX; i+=step){
       float x = i;
@@ -42,17 +45,31 @@ private:
 
       Vector2 pointPosition = {(x*10)+position.x, (y*10)+position.y};
 
-      points.push_back(pointPosition);
+      if (!boundsDefined){
+        highestY = pointPosition.y;
+        lowestY = pointPosition.y;
+
+        boundsDefined = true;
+      }
+
+      if (pointPosition.y > highestY) highestY = pointPosition.y;
+      if (pointPosition.y < lowestY) lowestY = pointPosition.y;
+
+      if (!(yCap && pointPosition.y < yCap)){
+        points.push_back(pointPosition);
+      }
 
     }
+
+    graphDimention.x = points.back().x - points.front().x;
+    graphDimention.y = highestY - lowestY;
 
   }
 
   void DrawGraphBox(){
     BeginDrawing();
-    log(points.size());
 
-    Rectangle graphOutline = {points[0].x, position.y-abs(points[0].y - points.back().y), graphDimention.x, abs(points[0].y - points.back().y)};
+    Rectangle graphOutline = {points.front().x, position.y-graphDimention.y, graphDimention.x, graphDimention.y};
 
     DrawRectangleLinesEx(graphOutline, 3.0f, RAYWHITE);
 
