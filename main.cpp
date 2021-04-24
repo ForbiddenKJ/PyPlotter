@@ -67,6 +67,15 @@ public:
 
   }
 
+  void DrawLine(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
+    BeginDrawing();
+    DrawLineEx((Vector2){start.x+GetPosition().x, start.y+GetPosition().y},
+              (Vector2){end.x+GetPosition().x, end.y+GetPosition().y},
+              thickness,
+              color);
+    EndDrawing();
+  }
+
 };
 
 class PyPlotter{
@@ -104,7 +113,8 @@ int main(){
   basicGraphBox.Draw();
 
   basicGraphBox.SetOrigin((Vector2){-10.0f, 0.0f});
-  
+  basicGraphBox.DrawLine((Vector2){0.0f, 0.0f}, (Vector2){100.0f, -100.0f});
+
   plotter.KeepWindowAlive();
 
   return 0;
