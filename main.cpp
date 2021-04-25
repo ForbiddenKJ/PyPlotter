@@ -56,6 +56,8 @@ private:
   Vector2 center;
   Vector2 origin;
 
+  std::vector<Vector2> points;
+
 public:
 
   void SetOrigin(Vector2 pos){
@@ -67,15 +69,47 @@ public:
 
   }
 
-  void DrawLine(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
+  void DrawPoint(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
     BeginDrawing();
     DrawLineEx((Vector2){start.x+GetPosition().x, start.y+GetPosition().y},
               (Vector2){end.x+GetPosition().x, end.y+GetPosition().y},
               thickness,
               color);
-    EndDrawing();
   }
 
+  void DrawAroundOrigin(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
+    BeginDrawing();
+    DrawLineEx((Vector2){start.x+origin.x, start.y+origin.y},
+              (Vector2){end.x+origin.x, end.y+origin.y},
+              thickness,
+              color);
+  }
+
+  void Calculate(int range_start, int range_end){
+
+    points.empty();
+
+    if (range_start < range_end){
+      for (int i = range_start; i < range_end; i++){
+        float x = i;
+        float y = -(pow(x,2));
+
+        points.push_back((Vector2){x, y});
+      }
+    }
+
+    if (range_start > range_end){
+      for (int i = range_start; range_start > range_end; i--){
+        LOG("Hey");
+      }
+    }
+  }
+
+  void DrawPoints(){
+    for (int i = 0; i < (int)points.size()-1; i++){
+      DrawAroundOrigin(points[i], points[i+1]);
+    }
+  }
 };
 
 class PyPlotter{
@@ -112,8 +146,10 @@ int main(){
 
   basicGraphBox.Draw();
 
-  basicGraphBox.SetOrigin((Vector2){-10.0f, 0.0f});
-  basicGraphBox.DrawLine((Vector2){0.0f, 0.0f}, (Vector2){100.0f, -100.0f});
+  basicGraphBox.SetOrigin((Vector2){0.0f, 0.0f});
+
+  basicGraphBox.Calculate(-100, 100);
+  basicGraphBox.DrawPoints();
 
   plotter.KeepWindowAlive();
 
