@@ -100,7 +100,10 @@ public:
 
     if (range_start > range_end){
       for (int i = range_start; range_start > range_end; i--){
-        LOG("Hey");
+        float x = i;
+        float y = -(pow(x,2));
+
+        points.push_back((Vector2){x, y});
       }
     }
   }
