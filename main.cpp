@@ -95,7 +95,9 @@ public:
     if (range_start < range_end) step = 1;
     if (range_start > range_end) step = -1;
 
-    for (int i = range_start; i < range_end; i+=step){
+    LOG(step);
+
+    for (int i = range_start; i != range_end; i+=step){
       float x = i;
       float y = -(pow(x,2));
 
