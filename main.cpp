@@ -59,7 +59,6 @@ private:
   std::vector<Vector2> points;
 
 public:
-
   void SetOrigin(Vector2 pos){
     center = {GetPosition().x+(GetSize().x/2),
              GetPosition().y-(GetSize().y/2)};
@@ -89,23 +88,20 @@ public:
 
     points.empty();
 
-    if (range_start < range_end){
-      for (int i = range_start; i < range_end; i++){
-        float x = i;
-        float y = -(pow(x,2));
+    if (range_start == range_end) return;
 
-        points.push_back((Vector2){x, y});
-      }
+    int step;
+
+    if (range_start < range_end) step = 1;
+    if (range_start > range_end) step = -1;
+
+    for (int i = range_start; i < range_end; i+=step){
+      float x = i;
+      float y = -(pow(x,2));
+
+      points.push_back((Vector2){x, y});
     }
 
-    if (range_start > range_end){
-      for (int i = range_start; range_start > range_end; i--){
-        float x = i;
-        float y = -(pow(x,2));
-
-        points.push_back((Vector2){x, y});
-      }
-    }
   }
 
   void DrawPoints(){
@@ -151,7 +147,7 @@ int main(){
 
   basicGraphBox.SetOrigin((Vector2){0.0f, 0.0f});
 
-  basicGraphBox.Calculate(-100, 100);
+  basicGraphBox.Calculate(100, -100);
   basicGraphBox.DrawPoints();
 
   plotter.KeepWindowAlive();
