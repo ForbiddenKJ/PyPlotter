@@ -1,8 +1,6 @@
 #include <raylib/raylib.h>
 #include <iostream>
 
-#define LOG(x) std::cout << x << std::endl;
-
 class Line{
 private:
   Vector2 points[2];
