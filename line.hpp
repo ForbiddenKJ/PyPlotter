@@ -1,4 +1,7 @@
 #include <raylib/raylib.h>
+#include <iostream>
+
+#define LOG(x) std::cout << x << std::endl;
 
 class Line{
 private:
@@ -15,7 +18,7 @@ public:
   }
 
   float gradient(){
-    return points[0].y/points[0].x;
+    return diff().y/diff().x;
   }
 
   float y_intercept(){
@@ -26,3 +29,10 @@ public:
     return points[0].x-points[0].y/gradient();
   }
 };
+
+Vector2 intersect(Line line1, Line line2){
+  float x_intersect = (line2.y_intercept() - line1.y_intercept()) / (line1.gradient() - line2.gradient());
+  float y_intersect = line1.gradient() * x_intersect + line1.y_intercept();
+
+  return (Vector2){x_intersect, y_intersect};
+}
