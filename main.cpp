@@ -3,6 +3,8 @@
 #include <math.h>
 #include <vector>
 
+#include "line.hpp"
+
 #define LOG(x) std::cout << x << std::endl
 
 Color BACKGROUND = {28, 28, 28, 0};
@@ -99,16 +101,20 @@ public:
       float x = i;
       float y = -(pow(x,2));
 
-      points.push_back((Vector2){x, y});
+      if (!((x+origin.x > GetPosition().x+GetSize().x) || (x+origin.x < GetPosition().x) || (y+origin.y < GetPosition().y-GetSize().y))){
+        points.push_back((Vector2){x, y});
+      }
+
     }
 
   }
+
 
   void DrawPoints(){
     for (int i = 0; i < (int)points.size()-1; i++){
       DrawAroundOrigin(points[i], points[i+1]);
     }
-  }
+   }
 };
 
 class PyPlotter{
@@ -120,7 +126,7 @@ public:
 
     BeginDrawing();
     ClearBackground(BACKGROUND);
-    EndDrawing();
+
   }
 
   void KeepWindowAlive(){
@@ -135,6 +141,7 @@ public:
 };
 
 int main(){
+
   PyPlotter plotter;
 
   plotter.StartWindow("Graph: 2^x", 800, 500);
@@ -147,7 +154,7 @@ int main(){
 
   basicGraphBox.SetOrigin((Vector2){0.0f, 0.0f});
 
-  basicGraphBox.Calculate(100, -100);
+  basicGraphBox.Calculate(-100, 100);
   basicGraphBox.DrawPoints();
 
   plotter.KeepWindowAlive();

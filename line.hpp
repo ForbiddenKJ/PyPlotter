@@ -1,5 +1,4 @@
 #include <raylib/raylib.h>
-#include <iostream>
 
 class Line{
 private:
