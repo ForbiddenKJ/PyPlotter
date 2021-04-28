@@ -3,42 +3,118 @@
 #include <math.h>
 #include <vector>
 
+#include "line.hpp"
+
+#define LOG(x) std::cout << x << std::endl
+
 Color BACKGROUND = {28, 28, 28, 0};
 
-class Graph{
-public:
-  Vector2 position;
-  std::vector<Vector2> points;
-  Vector2 graphDimention;
-
-  void DrawGraph(){
-    CalculatePoints(-10, 5);
-    PlotPoints();
-  }
-
+class GraphBox{
 private:
-  void PlotPoints(){
+  Vector2 graphBoxPosition;
+  Vector2 graphBoxSize;
+
+  void CalculateVertices(){
+    graphVertices[0] = (Vector2){graphBoxPosition.x, graphBoxPosition.y};
+    graphVertices[1] = (Vector2){graphBoxPosition.x+graphBoxSize.x, graphBoxPosition.y};
+    graphVertices[2] = (Vector2){graphBoxPosition.x+graphBoxSize.x, graphBoxPosition.y-graphBoxSize.y};
+    graphVertices[3] = (Vector2){graphBoxPosition.x, graphBoxPosition.y-graphBoxSize.y};
+  }
+
+public:
+  Vector2 graphVertices[4];
+
+  void SetPosition(int x, int y){
+    graphBoxPosition = (Vector2){(float)x, (float)y};
+  }
+
+  void SetSize(int x, int y){
+    graphBoxSize = (Vector2){(float)x, (float)y};
+  }
+
+  Vector2 GetPosition(){
+    return graphBoxPosition;
+  }
+
+  Vector2 GetSize(){
+    return graphBoxSize;
+  }
+
+  void Draw(){
+    CalculateVertices();
     BeginDrawing();
-    for (int i = 0; i < (int)points.size()-1; i++){
-      DrawLineEx(points[i], points[i+1], 2.0f, RAYWHITE);
+
+    for (int i = 0; i < 4; i++){
+      DrawLineEx(graphVertices[i%4], graphVertices[(i+1)%4], 3.0f, RAYWHITE);
     }
+
     EndDrawing();
+  }
+
+};
+
+class Graph : public GraphBox{
+private:
+  Vector2 center;
+  Vector2 origin;
+
+  std::vector<Vector2> points;
+
+public:
+  void SetOrigin(Vector2 pos){
+    center = {GetPosition().x+(GetSize().x/2),
+             GetPosition().y-(GetSize().y/2)};
+
+    origin = (Vector2){center.x + pos.x,
+             center.y - pos.y};
 
   }
 
-  void CalculatePoints(int minX, int maxX){
-    points.clear();
+  void DrawPoint(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
+    BeginDrawing();
+    DrawLineEx((Vector2){start.x+GetPosition().x, start.y+GetPosition().y},
+              (Vector2){end.x+GetPosition().x, end.y+GetPosition().y},
+              thickness,
+              color);
+  }
 
-    for (int i = minX; i < maxX; i++){
+  void DrawAroundOrigin(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
+    BeginDrawing();
+    DrawLineEx((Vector2){start.x+origin.x, start.y+origin.y},
+              (Vector2){end.x+origin.x, end.y+origin.y},
+              thickness,
+              color);
+  }
+
+  void Calculate(int range_start, int range_end){
+
+    points.empty();
+
+    if (range_start == range_end) return;
+
+    int step;
+
+    if (range_start < range_end) step = 1;
+    if (range_start > range_end) step = -1;
+
+    for (int i = range_start; i != range_end; i+=step){
       float x = i;
-      float y = -pow(2,x); // TODO: Customise Equation
+      float y = -(pow(x,2));
 
-      x += 40;
-      y += 25;
+      if (!((x+origin.x > GetPosition().x+GetSize().x) || (x+origin.x < GetPosition().x) || (y+origin.y < GetPosition().y-GetSize().y))){
+        points.push_back((Vector2){x, y});
+      }
 
-      points.push_back((Vector2){x*10, y*10});
     }
+
   }
+
+
+  void DrawPoints(){
+    for (int i = 0; i < (int)points.size()-1; i++){
+      DrawAroundOrigin(points[i], points[i+1]);
+    }
+   }
 };
 
 class PyPlotter{
@@ -50,7 +126,7 @@ public:
 
     BeginDrawing();
     ClearBackground(BACKGROUND);
-    EndDrawing();
+
   }
 
   void KeepWindowAlive(){
@@ -65,13 +141,21 @@ public:
 };
 
 int main(){
+
   PyPlotter plotter;
 
-  plotter.StartWindow("Graph: x^2", 800, 500);
+  plotter.StartWindow("Graph: 2^x", 800, 500);
 
-  Graph basicGraph;
+  Graph basicGraphBox;
+  basicGraphBox.SetPosition(400, 250);
+  basicGraphBox.SetSize(100, 100);
 
-  basicGraph.DrawGraph();
+  basicGraphBox.Draw();
+
+  basicGraphBox.SetOrigin((Vector2){0.0f, 0.0f});
+
+  basicGraphBox.Calculate(-100, 100);
+  basicGraphBox.DrawPoints();
 
   plotter.KeepWindowAlive();
 
