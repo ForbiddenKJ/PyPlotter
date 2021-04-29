@@ -27,6 +27,10 @@ public:
   }
 };
 
+bool doesIntersect(Line line1, Line line2){
+  return line1.gradient()-line2.gradient();
+}
+
 Vector2 intersect(Line line1, Line line2){
   float x_intersect = (line2.y_intercept() - line1.y_intercept()) / (line1.gradient() - line2.gradient());
   float y_intersect = line1.gradient() * x_intersect + line1.y_intercept();
