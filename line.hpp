@@ -41,12 +41,12 @@ Vector2 intersect(Line line1, Line line2){
   float l2_gradient = line2.gradient();
 
   if (line1.gradient() == INFINITY || line1.gradient() == -INFINITY){
-    line1.points[0].x += 0.000001;
+    line1.points[0].x += 0.0005;
     return intersect(line1, line2);
   }
 
   if (line2.gradient() == INFINITY || line2.gradient() == -INFINITY){
-    line2.points[0].x += 0.000001;
+    line2.points[0].x += 0.0005;
     return intersect(line1, line2);
   }
 
