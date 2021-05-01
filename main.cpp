@@ -169,20 +169,6 @@ int main(){
   basicGraphBox.Calculate(-100, 100);
   basicGraphBox.DrawPoints();
 
-  //Line line1;
-  //Line line2;
-
-  //line1.SetPoints((Vector2){-1, -1}, (Vector2){1, 1});
-  //line2.SetPoints((Vector2){-1, 1}, (Vector2){1, -1});
-
-  //if (doesIntersect(line1, line2)){
-  //  Vector2 intersection = intersect(line1, line2);
-
-  //  LOG(intersection.x);
-  //  LOG(intersection.y);
-
-  //}
-
   plotter.KeepWindowAlive();
 
   return 0;
