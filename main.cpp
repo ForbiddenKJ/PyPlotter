@@ -1,3 +1,4 @@
+#include <cmath>
 #include <raylib/raylib.h>
 #include <iostream>
 #include <math.h>
@@ -60,6 +61,15 @@ private:
 
   std::vector<Vector2> points;
 
+  bool InGraphBox(Vector2 point){
+    bool pointInGraphBox = (!((point.x+origin.x > GetPosition().x+GetSize().x)
+                              || (point.x+origin.x < GetPosition().x)
+                              || (point.y+origin.y < GetPosition().y-GetSize().y)
+                              || (point.y+origin.y > GetPosition().y)));
+
+    return pointInGraphBox;
+  }
+
 public:
   void SetOrigin(Vector2 pos){
     center = {GetPosition().x+(GetSize().x/2),
@@ -99,22 +109,24 @@ public:
 
     for (int i = range_start; i != range_end; i+=step){
       float x = i;
-      float y = -(pow(x,2));
+      float y = -(40*x);
 
-      if (!((x+origin.x > GetPosition().x+GetSize().x) || (x+origin.x < GetPosition().x) || (y+origin.y < GetPosition().y-GetSize().y))){
-        points.push_back((Vector2){x, y});
+      points.push_back((Vector2){x, y});
+    }
+
+  }
+
+  void DrawPoints(){
+    for (int i = 0; i < (int)points.size()-1; i++){
+
+      if (InGraphBox(points[i]) && InGraphBox(points[i+1])){
+        DrawAroundOrigin(points[i], points[i+1]);
       }
 
     }
 
   }
 
-
-  void DrawPoints(){
-    for (int i = 0; i < (int)points.size()-1; i++){
-      DrawAroundOrigin(points[i], points[i+1]);
-    }
-   }
 };
 
 class PyPlotter{
@@ -156,6 +168,20 @@ int main(){
 
   basicGraphBox.Calculate(-100, 100);
   basicGraphBox.DrawPoints();
+
+  //Line line1;
+  //Line line2;
+
+  //line1.SetPoints((Vector2){-1, -1}, (Vector2){1, 1});
+  //line2.SetPoints((Vector2){-1, 1}, (Vector2){1, -1});
+
+  //if (doesIntersect(line1, line2)){
+  //  Vector2 intersection = intersect(line1, line2);
+
+  //  LOG(intersection.x);
+  //  LOG(intersection.y);
+
+  //}
 
   plotter.KeepWindowAlive();
 
