@@ -14,6 +14,7 @@ class GraphBox{
 private:
   Vector2 graphBoxPosition;
   Vector2 graphBoxSize;
+  bool originSet;
 
   void CalculateVertices(){
     graphVertices[0] = (Vector2){graphBoxPosition.x, graphBoxPosition.y};
@@ -23,6 +24,9 @@ private:
   }
 
 public:
+  Vector2 center;
+  Vector2 origin;
+
   Vector2 graphVertices[4];
 
   void SetPosition(int x, int y){
@@ -41,6 +45,16 @@ public:
     return graphBoxSize;
   }
 
+  bool InGraphBox(Vector2 point){
+    bool pointInGraphBox = (!((point.x+origin.x > GetPosition().x+GetSize().x)
+                              || (point.x+origin.x < GetPosition().x)
+                              || (point.y+origin.y < GetPosition().y-GetSize().y)
+                              || (point.y+origin.y > GetPosition().y)));
+
+    return pointInGraphBox;
+  }
+
+
   void Draw(){
     CalculateVertices();
     BeginDrawing();
@@ -52,33 +66,25 @@ public:
     EndDrawing();
   }
 
+  void SetOrigin(Vector2 pos){
+    if (!originSet) originSet = true;
+
+    center = {GetPosition().x+(GetSize().x/2),
+             GetPosition().y-(GetSize().y/2)};
+
+    if (InGraphBox((Vector2){center.x + pos.x, center.y - pos.y})){
+        origin = (Vector2){center.x + pos.x, center.y - pos.y};
+    }
+
+  }
+
 };
 
 class Graph : public GraphBox{
 private:
-  Vector2 center;
-  Vector2 origin;
-
   std::vector<Vector2> points;
 
-  bool InGraphBox(Vector2 point){
-    bool pointInGraphBox = (!((point.x+origin.x > GetPosition().x+GetSize().x)
-                              || (point.x+origin.x < GetPosition().x)
-                              || (point.y+origin.y < GetPosition().y-GetSize().y)
-                              || (point.y+origin.y > GetPosition().y)));
-
-    return pointInGraphBox;
-  }
-
 public:
-  void SetOrigin(Vector2 pos){
-    center = {GetPosition().x+(GetSize().x/2),
-             GetPosition().y-(GetSize().y/2)};
-
-    origin = (Vector2){center.x + pos.x,
-             center.y - pos.y};
-
-  }
 
   void DrawPoint(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
     BeginDrawing();
