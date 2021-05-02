@@ -4,8 +4,11 @@
 #include <iostream>
 #include <math.h>
 #include <vector>
+#include <pybind11/pybind11.h>
 
 #define LOG(x) std::cout << x << std::endl
+
+namespace py = pybind11;
 
 Color BACKGROUND = {28, 28, 28, 0};
 
@@ -195,6 +198,13 @@ public:
 
 };
 
+PYBIND11_MODULE(PyPlotter, m){
+  py::class_<PyPlotter>(m, "PyPlotter")
+    .def("start_window", &PyPlotter::StartWindow)
+    .def("keep_window_alive", &PyPlotter::KeepWindowAlive);
+}
+
+/*
 int main(){
 
   PyPlotter plotter;
@@ -204,6 +214,7 @@ int main(){
   Graph basicGraphBox;
   basicGraphBox.SetPosition(400, 250);
   basicGraphBox.SetSize(100, 200);
+
 
   basicGraphBox.Draw();
   basicGraphBox.SetOrigin((Vector2){0.0f, 0.0f});
@@ -216,4 +227,4 @@ int main(){
   plotter.KeepWindowAlive();
 
   return 0;
-}
+}*/
