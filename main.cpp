@@ -4,22 +4,10 @@
 #include <iostream>
 #include <math.h>
 #include <vector>
-#include <sstream>
-#include <cstring>
-
-#include "line.hpp"
 
 #define LOG(x) std::cout << x << std::endl
-#define C_STRING(x) &x[0]
 
 Color BACKGROUND = {28, 28, 28, 0};
-
-char* Convert(float number){
-    std::ostringstream buff;
-    buff<<number;
-    return C_STRING(buff.str());
-}
-
 
 class GraphBox{
 private:
