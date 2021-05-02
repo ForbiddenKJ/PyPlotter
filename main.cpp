@@ -1,14 +1,25 @@
 #include <cmath>
+#include <cstdio>
 #include <raylib/raylib.h>
 #include <iostream>
 #include <math.h>
 #include <vector>
+#include <sstream>
+#include <cstring>
 
 #include "line.hpp"
 
 #define LOG(x) std::cout << x << std::endl
+#define C_STRING(x) &x[0]
 
 Color BACKGROUND = {28, 28, 28, 0};
+
+char* Convert(float number){
+    std::ostringstream buff;
+    buff<<number;
+    return C_STRING(buff.str());
+}
+
 
 class GraphBox{
 private:
@@ -79,9 +90,35 @@ public:
   }
 
   void DrawAxis(){
+    if (!originSet) return;
+
     BeginDrawing();
     DrawLineEx((Vector2){graphVertices[0].x, origin.y}, (Vector2){graphVertices[1].x, origin.y}, 1.0f, RAYWHITE);
     DrawLineEx((Vector2){origin.x, graphVertices[0].y}, (Vector2){origin.x, graphVertices[3].y}, 1.0f, RAYWHITE);
+    EndDrawing();
+  }
+
+  void DrawNumber(){
+    int originSize = MeasureText("0", 10);
+
+    char text[4][32];
+    int textSize[4];
+
+    sprintf(text[0], "%i", (int)-GetSize().x);
+    sprintf(text[1], "%i", (int)GetSize().x);
+    sprintf(text[2], "%i", (int)-GetSize().y);
+    sprintf(text[3], "%i", (int)GetSize().y);
+
+    for (int i = 0; i < 4; i++) textSize[i] = MeasureText(text[i], 10);
+
+    BeginDrawing();
+    DrawText("0", (origin.x-originSize)-2, origin.y+2, 10, RAYWHITE);
+
+    DrawText(text[0], graphVertices[0].x+2, origin.y+2, 10, RAYWHITE);
+    DrawText(text[1], (graphVertices[1].x-textSize[1])-2, origin.y+2, 10, RAYWHITE);
+    DrawText(text[2], (origin.x-textSize[2])-2, (graphVertices[0].y-2)-8, 10, RAYWHITE);
+    DrawText(text[3], (origin.x-textSize[3])-2, graphVertices[3].y+2, 10, RAYWHITE);
+
     EndDrawing();
   }
 
@@ -178,6 +215,7 @@ int main(){
   basicGraphBox.Draw();
   basicGraphBox.SetOrigin((Vector2){0.0f, 0.0f});
   basicGraphBox.DrawAxis();
+  basicGraphBox.DrawNumber();
 
   basicGraphBox.Calculate(-100, 100);
   basicGraphBox.DrawPoints();
