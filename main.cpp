@@ -87,6 +87,11 @@ public:
   }
 
   void DrawNumber(){
+    if (!originSet) return;
+
+    int fontSize = 10;
+    int textOffset = 2;
+
     int originSize = MeasureText("0", 10);
 
     char text[4][32];
@@ -97,15 +102,15 @@ public:
     sprintf(text[2], "%i", (int)-GetSize().y);
     sprintf(text[3], "%i", (int)GetSize().y);
 
-    for (int i = 0; i < 4; i++) textSize[i] = MeasureText(text[i], 10);
+    for (int i = 0; i < 4; i++) textSize[i] = MeasureText(text[i], fontSize);
 
     BeginDrawing();
-    DrawText("0", (origin.x-originSize)-2, origin.y+2, 10, RAYWHITE);
+    DrawText("0", (origin.x-originSize)-textOffset, origin.y+textOffset,fontSize, RAYWHITE);
 
-    DrawText(text[0], graphVertices[0].x+2, origin.y+2, 10, RAYWHITE);
-    DrawText(text[1], (graphVertices[1].x-textSize[1])-2, origin.y+2, 10, RAYWHITE);
-    DrawText(text[2], (origin.x-textSize[2])-2, (graphVertices[0].y-2)-8, 10, RAYWHITE);
-    DrawText(text[3], (origin.x-textSize[3])-2, graphVertices[3].y+2, 10, RAYWHITE);
+    DrawText(text[0], graphVertices[0].x+textOffset, origin.y+textOffset, fontSize, RAYWHITE);
+    DrawText(text[1], (graphVertices[1].x-textSize[1])-textOffset, origin.y+textOffset, fontSize, RAYWHITE);
+    DrawText(text[2], (origin.x-textSize[2])-textOffset, (graphVertices[0].y-textOffset)-(fontSize-textOffset), fontSize, RAYWHITE);
+    DrawText(text[3], (origin.x-textSize[3])-textOffset, graphVertices[3].y+textOffset, fontSize, RAYWHITE);
 
     EndDrawing();
   }
