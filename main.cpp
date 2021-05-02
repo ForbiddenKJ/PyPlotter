@@ -78,6 +78,13 @@ public:
 
   }
 
+  void DrawAxis(){
+    BeginDrawing();
+    DrawLineEx((Vector2){graphVertices[0].x, origin.y}, (Vector2){graphVertices[1].x, origin.y}, 1.0f, RAYWHITE);
+    DrawLineEx((Vector2){origin.x, graphVertices[0].y}, (Vector2){origin.x, graphVertices[3].y}, 1.0f, RAYWHITE);
+    EndDrawing();
+  }
+
 };
 
 class Graph : public GraphBox{
@@ -115,7 +122,7 @@ public:
 
     for (int i = range_start; i != range_end; i+=step){
       float x = i;
-      float y = -(40*x);
+      float y = -(pow(x,2)-100);
 
       points.push_back((Vector2){x, y});
     }
@@ -126,7 +133,7 @@ public:
     for (int i = 0; i < (int)points.size()-1; i++){
 
       if (InGraphBox(points[i]) && InGraphBox(points[i+1])){
-        DrawAroundOrigin(points[i], points[i+1]);
+        DrawAroundOrigin(points[i], points[i+1], 3.0f, BLUE);
       }
 
     }
@@ -166,11 +173,11 @@ int main(){
 
   Graph basicGraphBox;
   basicGraphBox.SetPosition(400, 250);
-  basicGraphBox.SetSize(100, 100);
+  basicGraphBox.SetSize(100, 200);
 
   basicGraphBox.Draw();
-
   basicGraphBox.SetOrigin((Vector2){0.0f, 0.0f});
+  basicGraphBox.DrawAxis();
 
   basicGraphBox.Calculate(-100, 100);
   basicGraphBox.DrawPoints();
