@@ -4,8 +4,12 @@
 #include <iostream>
 #include <math.h>
 #include <vector>
+#include <pybind11/pybind11.h>
+#include <GLFW/glfw3.h>
 
 #define LOG(x) std::cout << x << std::endl
+
+namespace py = pybind11;
 
 Color BACKGROUND = {28, 28, 28, 0};
 
@@ -65,14 +69,14 @@ public:
     EndDrawing();
   }
 
-  void SetOrigin(Vector2 pos){
+  void SetOrigin(int x, int y){
     if (!originSet) originSet = true;
 
     center = {GetPosition().x+(GetSize().x/2),
              GetPosition().y-(GetSize().y/2)};
 
-    if (InGraphBox((Vector2){center.x + pos.x, center.y - pos.y})){
-        origin = (Vector2){center.x + pos.x, center.y - pos.y};
+    if (InGraphBox((Vector2){center.x + x, center.y - y})){
+        origin = (Vector2){center.x + x, center.y - y};
     }
 
   }
@@ -87,6 +91,11 @@ public:
   }
 
   void DrawNumber(){
+    if (!originSet) return;
+
+    int fontSize = 10;
+    int textOffset = 2;
+
     int originSize = MeasureText("0", 10);
 
     char text[4][32];
@@ -97,15 +106,15 @@ public:
     sprintf(text[2], "%i", (int)-GetSize().y);
     sprintf(text[3], "%i", (int)GetSize().y);
 
-    for (int i = 0; i < 4; i++) textSize[i] = MeasureText(text[i], 10);
+    for (int i = 0; i < 4; i++) textSize[i] = MeasureText(text[i], fontSize);
 
     BeginDrawing();
-    DrawText("0", (origin.x-originSize)-2, origin.y+2, 10, RAYWHITE);
+    DrawText("0", (origin.x-originSize)-textOffset, origin.y+textOffset,fontSize, RAYWHITE);
 
-    DrawText(text[0], graphVertices[0].x+2, origin.y+2, 10, RAYWHITE);
-    DrawText(text[1], (graphVertices[1].x-textSize[1])-2, origin.y+2, 10, RAYWHITE);
-    DrawText(text[2], (origin.x-textSize[2])-2, (graphVertices[0].y-2)-8, 10, RAYWHITE);
-    DrawText(text[3], (origin.x-textSize[3])-2, graphVertices[3].y+2, 10, RAYWHITE);
+    DrawText(text[0], graphVertices[0].x+textOffset, origin.y+textOffset, fontSize, RAYWHITE);
+    DrawText(text[1], (graphVertices[1].x-textSize[1])-textOffset, origin.y+textOffset, fontSize, RAYWHITE);
+    DrawText(text[2], (origin.x-textSize[2])-textOffset, (graphVertices[0].y-textOffset)-(fontSize-textOffset), fontSize, RAYWHITE);
+    DrawText(text[3], (origin.x-textSize[3])-textOffset, graphVertices[3].y+textOffset, fontSize, RAYWHITE);
 
     EndDrawing();
   }
@@ -117,6 +126,10 @@ private:
   std::vector<Vector2> points;
 
 public:
+  Graph(const int posX, const int posY, const int sizeX, const int sizeY){
+    SetPosition(posX, posY);
+    SetSize(sizeX, sizeY);
+  }
 
   void DrawPoint(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
     BeginDrawing();
@@ -170,12 +183,16 @@ public:
 class PyPlotter{
 public:
 
-  void StartWindow(const char* WINDOWNAME, const int SCREENWIDTH, const int SCREENHEIGHT){
-    InitWindow(SCREENWIDTH, SCREENHEIGHT, WINDOWNAME);
-    SetTargetFPS(60);
+  PyPlotter(const char* WINDOWNAME, const int SCREENWIDTH, const int SCREENHEIGHT){
 
-    BeginDrawing();
-    ClearBackground(BACKGROUND);
+    if (glfwInit())
+    {
+      InitWindow(SCREENWIDTH, SCREENHEIGHT, WINDOWNAME);
+      SetTargetFPS(60);
+
+      BeginDrawing();
+      ClearBackground(BACKGROUND);
+    }
 
   }
 
@@ -190,18 +207,32 @@ public:
 
 };
 
+
+PYBIND11_MODULE(PyPlotter, m){
+  py::class_<PyPlotter>(m, "PyPlotter")
+    .def(py::init<const char*, const int, const int>())
+    .def("keep_window_alive", &PyPlotter::KeepWindowAlive);
+
+  py::class_<Graph>(m, "Graph")
+    .def(py::init<const int, const int, const int, const int>())
+    .def("draw", &Graph::Draw)
+    .def("set_origin", &Graph::SetOrigin)
+    .def("draw_axis", &Graph::DrawAxis)
+    .def("draw_number", &Graph::DrawNumber)
+    .def("calculate", &Graph::Calculate)
+    .def("draw_points", &Graph::DrawPoints);
+}
+
+
+/*
 int main(){
 
-  PyPlotter plotter;
+  PyPlotter plotter = {"Graph: 2^x", 800, 500};
 
-  plotter.StartWindow("Graph: 2^x", 800, 500);
-
-  Graph basicGraphBox;
-  basicGraphBox.SetPosition(400, 250);
-  basicGraphBox.SetSize(100, 200);
+  Graph basicGraphBox = {400, 250, 100, 200};
 
   basicGraphBox.Draw();
-  basicGraphBox.SetOrigin((Vector2){0.0f, 0.0f});
+  basicGraphBox.SetOrigin(0, 0);
   basicGraphBox.DrawAxis();
   basicGraphBox.DrawNumber();
 
@@ -212,3 +243,4 @@ int main(){
 
   return 0;
 }
+*/
