@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstdio>
 #include <raylib/raylib.h>
+#include <raylib/raymath.h>
 #include <iostream>
 #include <math.h>
 #include <vector>
@@ -12,6 +13,7 @@
 namespace py = pybind11;
 
 Color BACKGROUND = {28, 28, 28, 0};
+RenderTexture frameBuffer;
 
 class GraphBox{
 private:
@@ -60,13 +62,13 @@ public:
 
   void Draw(){
     CalculateVertices();
-    BeginDrawing();
+    BeginTextureMode(frameBuffer);
 
     for (int i = 0; i < 4; i++){
       DrawLineEx(graphVertices[i%4], graphVertices[(i+1)%4], 3.0f, RAYWHITE);
     }
 
-    EndDrawing();
+    EndTextureMode();
   }
 
   void SetOrigin(int x, int y){
@@ -84,10 +86,10 @@ public:
   void DrawAxis(){
     if (!originSet) return;
 
-    BeginDrawing();
+    BeginTextureMode(frameBuffer);
     DrawLineEx((Vector2){graphVertices[0].x, origin.y}, (Vector2){graphVertices[1].x, origin.y}, 1.0f, RAYWHITE);
     DrawLineEx((Vector2){origin.x, graphVertices[0].y}, (Vector2){origin.x, graphVertices[3].y}, 1.0f, RAYWHITE);
-    EndDrawing();
+    EndTextureMode();
   }
 
   void DrawNumber(){
@@ -108,7 +110,7 @@ public:
 
     for (int i = 0; i < 4; i++) textSize[i] = MeasureText(text[i], fontSize);
 
-    BeginDrawing();
+    BeginTextureMode(frameBuffer);
     DrawText("0", (origin.x-originSize)-textOffset, origin.y+textOffset,fontSize, RAYWHITE);
 
     DrawText(text[0], graphVertices[0].x+textOffset, origin.y+textOffset, fontSize, RAYWHITE);
@@ -116,7 +118,7 @@ public:
     DrawText(text[2], (origin.x-textSize[2])-textOffset, (graphVertices[0].y-textOffset)-(fontSize-textOffset), fontSize, RAYWHITE);
     DrawText(text[3], (origin.x-textSize[3])-textOffset, graphVertices[3].y+textOffset, fontSize, RAYWHITE);
 
-    EndDrawing();
+    EndTextureMode();
   }
 
 };
@@ -126,25 +128,29 @@ private:
   std::vector<Vector2> points;
 
 public:
-  Graph(const int posX, const int posY, const int sizeX, const int sizeY){
+
+  Graph(int posX, int posY, int sizeX, int sizeY){
     SetPosition(posX, posY);
     SetSize(sizeX, sizeY);
   }
 
+
   void DrawPoint(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
-    BeginDrawing();
+    BeginTextureMode(frameBuffer);
     DrawLineEx((Vector2){start.x+GetPosition().x, start.y+GetPosition().y},
               (Vector2){end.x+GetPosition().x, end.y+GetPosition().y},
               thickness,
               color);
+    EndTextureMode();
   }
 
   void DrawAroundOrigin(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
-    BeginDrawing();
+    BeginTextureMode(frameBuffer);
     DrawLineEx((Vector2){start.x+origin.x, start.y+origin.y},
               (Vector2){end.x+origin.x, end.y+origin.y},
               thickness,
               color);
+    EndTextureMode();
   }
 
   void Calculate(int range_start, int range_end){
@@ -190,19 +196,23 @@ public:
       InitWindow(SCREENWIDTH, SCREENHEIGHT, WINDOWNAME);
       SetTargetFPS(60);
 
-      BeginDrawing();
-      ClearBackground(BACKGROUND);
+      frameBuffer = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
     }
 
   }
 
   void KeepWindowAlive(){
+    Rectangle source = {0, 0, (float)GetScreenWidth(), (float)-GetScreenHeight()};
+    Rectangle dest = {0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
     while (!WindowShouldClose()){
       BeginDrawing();
+      ClearBackground(BACKGROUND);
+      DrawTexturePro(frameBuffer.texture, source, dest, Vector2Zero(), 0, WHITE);
       EndDrawing();
     }
 
     CloseWindow();
+
   }
 
 };
