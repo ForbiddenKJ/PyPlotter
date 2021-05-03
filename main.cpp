@@ -201,7 +201,7 @@ public:
 
   }
 
-  void KeepWindowAlive(){
+  void MainLoop(){
     Rectangle source = {0, 0, (float)GetScreenWidth(), (float)-GetScreenHeight()};
     Rectangle dest = {0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
     while (!WindowShouldClose()){
@@ -221,7 +221,7 @@ public:
 PYBIND11_MODULE(PyPlotter, m){
   py::class_<PyPlotter>(m, "PyPlotter")
     .def(py::init<const char*, const int, const int>())
-    .def("keep_window_alive", &PyPlotter::KeepWindowAlive);
+    .def("main_loop", &PyPlotter::MainLoop);
 
   py::class_<Graph>(m, "Graph")
     .def(py::init<const int, const int, const int, const int>())
@@ -232,25 +232,3 @@ PYBIND11_MODULE(PyPlotter, m){
     .def("calculate", &Graph::Calculate)
     .def("draw_points", &Graph::DrawPoints);
 }
-
-
-/*
-int main(){
-
-  PyPlotter plotter = {"Graph: 2^x", 800, 500};
-
-  Graph basicGraphBox = {400, 250, 100, 200};
-
-  basicGraphBox.Draw();
-  basicGraphBox.SetOrigin(0, 0);
-  basicGraphBox.DrawAxis();
-  basicGraphBox.DrawNumber();
-
-  basicGraphBox.Calculate(-100, 100);
-  basicGraphBox.DrawPoints();
-
-  plotter.KeepWindowAlive();
-
-  return 0;
-}
-*/

@@ -10,4 +10,4 @@ graph.draw_number()
 graph.calculate(-100, 100)
 graph.draw_points()
 
-plotter.keep_window_alive()
+plotter.main_loop()
