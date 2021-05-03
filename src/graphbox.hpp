@@ -1,19 +1,9 @@
-#include <cmath>
-#include <cstdio>
+#pragma once
+
 #include <raylib/raylib.h>
-#include <raylib/raymath.h>
-#include <iostream>
-#include <math.h>
-#include <vector>
-#include <pybind11/pybind11.h>
-#include <GLFW/glfw3.h>
+#include <cstdio>
 
-#define LOG(x) std::cout << x << std::endl
-
-namespace py = pybind11;
-
-Color BACKGROUND = {28, 28, 28, 0};
-RenderTexture frameBuffer;
+#include "globals.hpp"
 
 class GraphBox{
 private:
@@ -122,113 +112,3 @@ public:
   }
 
 };
-
-class Graph : public GraphBox{
-private:
-  std::vector<Vector2> points;
-
-public:
-
-  Graph(int posX, int posY, int sizeX, int sizeY){
-    SetPosition(posX, posY);
-    SetSize(sizeX, sizeY);
-  }
-
-
-  void DrawPoint(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
-    BeginTextureMode(frameBuffer);
-    DrawLineEx((Vector2){start.x+GetPosition().x, start.y+GetPosition().y},
-              (Vector2){end.x+GetPosition().x, end.y+GetPosition().y},
-              thickness,
-              color);
-    EndTextureMode();
-  }
-
-  void DrawAroundOrigin(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
-    BeginTextureMode(frameBuffer);
-    DrawLineEx((Vector2){start.x+origin.x, start.y+origin.y},
-              (Vector2){end.x+origin.x, end.y+origin.y},
-              thickness,
-              color);
-    EndTextureMode();
-  }
-
-  void Calculate(int range_start, int range_end){
-
-    points.empty();
-
-    if (range_start == range_end) return;
-
-    int step;
-
-    if (range_start < range_end) step = 1;
-    if (range_start > range_end) step = -1;
-
-    for (int i = range_start; i != range_end; i+=step){
-      float x = i;
-      float y = -(pow(x,2)-100);
-
-      points.push_back((Vector2){x, y});
-    }
-
-  }
-
-  void DrawPoints(){
-    for (int i = 0; i < (int)points.size()-1; i++){
-
-      if (InGraphBox(points[i]) && InGraphBox(points[i+1])){
-        DrawAroundOrigin(points[i], points[i+1], 3.0f, BLUE);
-      }
-
-    }
-
-  }
-
-};
-
-class PyPlotter{
-public:
-
-  PyPlotter(const char* WINDOWNAME, const int SCREENWIDTH, const int SCREENHEIGHT){
-
-    if (glfwInit())
-    {
-      InitWindow(SCREENWIDTH, SCREENHEIGHT, WINDOWNAME);
-      SetTargetFPS(60);
-
-      frameBuffer = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
-    }
-
-  }
-
-  void MainLoop(){
-    Rectangle source = {0, 0, (float)GetScreenWidth(), (float)-GetScreenHeight()};
-    Rectangle dest = {0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
-    while (!WindowShouldClose()){
-      BeginDrawing();
-      ClearBackground(BACKGROUND);
-      DrawTexturePro(frameBuffer.texture, source, dest, Vector2Zero(), 0, WHITE);
-      EndDrawing();
-    }
-
-    CloseWindow();
-
-  }
-
-};
-
-
-PYBIND11_MODULE(PyPlotter, m){
-  py::class_<PyPlotter>(m, "PyPlotter")
-    .def(py::init<const char*, const int, const int>())
-    .def("main_loop", &PyPlotter::MainLoop);
-
-  py::class_<Graph>(m, "Graph")
-    .def(py::init<const int, const int, const int, const int>())
-    .def("draw", &Graph::Draw)
-    .def("set_origin", &Graph::SetOrigin)
-    .def("draw_axis", &Graph::DrawAxis)
-    .def("draw_number", &Graph::DrawNumber)
-    .def("calculate", &Graph::Calculate)
-    .def("draw_points", &Graph::DrawPoints);
-}
