@@ -5,6 +5,7 @@
 #include <math.h>
 #include <vector>
 #include <pybind11/pybind11.h>
+#include <GLFW/glfw3.h>
 
 #define LOG(x) std::cout << x << std::endl
 
@@ -125,6 +126,10 @@ private:
   std::vector<Vector2> points;
 
 public:
+  Graph(const int posX, const int posY, const int sizeX, const int sizeY){
+    SetPosition(posX, posY);
+    SetSize(sizeX, sizeY);
+  }
 
   void DrawPoint(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
     BeginDrawing();
@@ -178,12 +183,16 @@ public:
 class PyPlotter{
 public:
 
-  void StartWindow(const char* WINDOWNAME, const int SCREENWIDTH, const int SCREENHEIGHT){
-    InitWindow(SCREENWIDTH, SCREENHEIGHT, WINDOWNAME);
-    SetTargetFPS(60);
+  PyPlotter(const char* WINDOWNAME, const int SCREENWIDTH, const int SCREENHEIGHT){
 
-    BeginDrawing();
-    ClearBackground(BACKGROUND);
+    if (glfwInit())
+    {
+      InitWindow(SCREENWIDTH, SCREENHEIGHT, WINDOWNAME);
+      SetTargetFPS(60);
+
+      BeginDrawing();
+      ClearBackground(BACKGROUND);
+    }
 
   }
 
@@ -198,23 +207,29 @@ public:
 
 };
 
+
 PYBIND11_MODULE(PyPlotter, m){
   py::class_<PyPlotter>(m, "PyPlotter")
-    .def("start_window", &PyPlotter::StartWindow)
+    .def(py::init<const char*, const int, const int>())
     .def("keep_window_alive", &PyPlotter::KeepWindowAlive);
+
+  py::class_<Graph>(m, "Graph")
+    .def(py::init<const int, const int, const int, const int>())
+    .def("draw", &Graph::Draw)
+    .def("set_origin", &Graph::SetOrigin)
+    .def("draw_axis", &Graph::DrawAxis)
+    .def("draw_number", &Graph::DrawNumber)
+    .def("calculate", &Graph::Calculate)
+    .def("draw_points", &Graph::DrawPoint);
 }
+
 
 /*
 int main(){
 
-  PyPlotter plotter;
+  PyPlotter plotter = {"Graph: 2^x", 800, 500};
 
-  plotter.StartWindow("Graph: 2^x", 800, 500);
-
-  Graph basicGraphBox;
-  basicGraphBox.SetPosition(400, 250);
-  basicGraphBox.SetSize(100, 200);
-
+  Graph basicGraphBox = {400, 250, 100, 200};
 
   basicGraphBox.Draw();
   basicGraphBox.SetOrigin((Vector2){0.0f, 0.0f});
@@ -227,4 +242,5 @@ int main(){
   plotter.KeepWindowAlive();
 
   return 0;
-}*/
+}
+*/
