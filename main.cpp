@@ -69,14 +69,14 @@ public:
     EndDrawing();
   }
 
-  void SetOrigin(Vector2 pos){
+  void SetOrigin(int x, int y){
     if (!originSet) originSet = true;
 
     center = {GetPosition().x+(GetSize().x/2),
              GetPosition().y-(GetSize().y/2)};
 
-    if (InGraphBox((Vector2){center.x + pos.x, center.y - pos.y})){
-        origin = (Vector2){center.x + pos.x, center.y - pos.y};
+    if (InGraphBox((Vector2){center.x + x, center.y - y})){
+        origin = (Vector2){center.x + x, center.y - y};
     }
 
   }
@@ -220,7 +220,7 @@ PYBIND11_MODULE(PyPlotter, m){
     .def("draw_axis", &Graph::DrawAxis)
     .def("draw_number", &Graph::DrawNumber)
     .def("calculate", &Graph::Calculate)
-    .def("draw_points", &Graph::DrawPoint);
+    .def("draw_points", &Graph::DrawPoints);
 }
 
 
@@ -232,7 +232,7 @@ int main(){
   Graph basicGraphBox = {400, 250, 100, 200};
 
   basicGraphBox.Draw();
-  basicGraphBox.SetOrigin((Vector2){0.0f, 0.0f});
+  basicGraphBox.SetOrigin(0, 0);
   basicGraphBox.DrawAxis();
   basicGraphBox.DrawNumber();
 
