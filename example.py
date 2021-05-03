@@ -1,6 +1,6 @@
-from PyPlotter import PyPlotter, Graph
+from PyPlotter import Plotter, Graph
 
-plotter = PyPlotter("Graph", 800, 500)
+plotter = Plotter("Graph", 800, 500)
 graph = Graph(400, 250, 100, 200)
 
 graph.draw()
