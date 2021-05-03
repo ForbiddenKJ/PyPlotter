@@ -7,8 +7,8 @@ ext_modules = [
     Pybind11Extension(
         "PyPlotter",
         sorted(glob("*.cpp")),
-        library_dirs=["/usr/local/lib/"],
-        libraries=["raylib"],
+        library_dirs=["/usr/local/lib/", "/usr/lib/"],
+        libraries=["raylib", "glfw3"],
     )
 ]
 
