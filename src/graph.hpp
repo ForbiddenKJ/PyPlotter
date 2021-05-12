@@ -6,6 +6,7 @@
 
 #include "globals.hpp"
 #include "graphbox.hpp"
+#include "MathParser/include/parser.hpp"
 
 class Graph : public GraphBox{
 private:
@@ -37,7 +38,7 @@ public:
     EndTextureMode();
   }
 
-  void Calculate(int range_start, int range_end){
+  void Calculate(int range_start, int range_end, std::string expr){
 
     points.empty();
 
@@ -48,9 +49,17 @@ public:
     if (range_start < range_end) step = 1;
     if (range_start > range_end) step = -1;
 
+    MathParser parser;
+
+    mp_RPN rpn = parser.reversePolishNotation(expr);
+
     for (int i = range_start; i != range_end; i+=step){
+
       float x = i;
-      float y = -(pow(x,2)-100);
+
+      parser.appendVariable("x", (double)x);
+
+      float y = -((float)parser.eval(rpn));
 
       points.push_back((Vector2){x, y});
     }
