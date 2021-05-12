@@ -1,0 +1,3 @@
+[submodule "src/MathParser"]
+	path = src/MathParser
+	url = https://github.com/KJ002/MathParser

@@ -7,7 +7,7 @@ graph.draw()
 graph.set_origin(0, 0)
 graph.draw_axis()
 graph.draw_number()
-graph.calculate(-100, 100)
+graph.calculate(-100, 100, "x^2")
 graph.draw_points()
 
 plotter.main_loop()
