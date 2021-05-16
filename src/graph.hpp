@@ -12,6 +12,17 @@ class Graph : public GraphBox{
 private:
   std::vector<Vector2> points;
 
+  void DrawPoints(){
+    for (int i = 0; i < (int)points.size()-1; i++){
+      if (InGraphBox(points[i]) && InGraphBox(points[i+1])){
+        DrawAroundOrigin(points[i], points[i+1], 3.0f, BLUE);
+      }
+
+    }
+
+  }
+
+
 public:
 
   Graph(int posX, int posY, int sizeX, int sizeY){
@@ -62,17 +73,6 @@ public:
       float y = -((float)parser.eval(rpn));
 
       points.push_back((Vector2){x, y});
-    }
-
-  }
-
-  void DrawPoints(){
-    for (int i = 0; i < (int)points.size()-1; i++){
-
-      if (InGraphBox(points[i]) && InGraphBox(points[i+1])){
-        DrawAroundOrigin(points[i], points[i+1], 3.0f, BLUE);
-      }
-
     }
 
   }
