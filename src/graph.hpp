@@ -31,7 +31,7 @@ public:
   }
 
 
-  void DrawPoint(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
+  void DrawPoint(const Vector2 start, const Vector2 end, const float thickness = 3.0f, const Color color = RAYWHITE){
     BeginTextureMode(frameBuffer);
     DrawLineEx((Vector2){start.x+GetPosition().x, start.y+GetPosition().y},
               (Vector2){end.x+GetPosition().x, end.y+GetPosition().y},
@@ -40,7 +40,7 @@ public:
     EndTextureMode();
   }
 
-  void DrawAroundOrigin(Vector2 start, Vector2 end, float thickness = 3.0f, Color color = RAYWHITE){
+  void DrawAroundOrigin(const Vector2 start, const Vector2 end, const float thickness = 3.0f, const Color color = RAYWHITE){
     BeginTextureMode(frameBuffer);
     DrawLineEx((Vector2){start.x+origin.x, start.y+origin.y},
               (Vector2){end.x+origin.x, end.y+origin.y},
@@ -49,7 +49,7 @@ public:
     EndTextureMode();
   }
 
-  void Calculate(int range_start, int range_end, std::string expr){
+  void Calculate(const int range_start, const int range_end, const std::string expr){
 
     points.empty();
 
@@ -77,6 +77,11 @@ public:
 
     DrawPoints();
 
+  }
+
+  void Plot(const int range_start, const int range_end, const std::string expr){
+    Calculate(range_start, range_end, expr);
+    DrawPoints();
   }
 
 };
