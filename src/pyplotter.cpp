@@ -13,9 +13,6 @@ PYBIND11_MODULE(PyPlotter, m){
   py::class_<Graph>(m, "Graph")
     .def(py::init<const int, const int, const int, const int>())
     .def("draw", &Graph::Draw)
-    .def("set_origin", &Graph::SetOrigin)
-    .def("draw_axis", &Graph::DrawAxis)
-    .def("draw_number", &Graph::DrawNumber)
     .def("calculate", &Graph::Calculate)
-    .def("draw_points", &Graph::DrawPoints);
+    .def("plot", &Graph::Plot);
 }
