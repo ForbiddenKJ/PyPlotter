@@ -75,6 +75,8 @@ public:
       points.push_back((Vector2){x, y});
     }
 
+    DrawPoints();
+
   }
 
 };
