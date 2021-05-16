@@ -18,39 +18,7 @@ private:
     graphVertices[3] = (Vector2){graphBoxPosition.x, graphBoxPosition.y-graphBoxSize.y};
   }
 
-public:
-  Vector2 center;
-  Vector2 origin;
-
-  Vector2 graphVertices[4];
-
-  void SetPosition(int x, int y){
-    graphBoxPosition = (Vector2){(float)x, (float)y};
-  }
-
-  void SetSize(int x, int y){
-    graphBoxSize = (Vector2){(float)x, (float)y};
-  }
-
-  Vector2 GetPosition(){
-    return graphBoxPosition;
-  }
-
-  Vector2 GetSize(){
-    return graphBoxSize;
-  }
-
-  bool InGraphBox(Vector2 point){
-    bool pointInGraphBox = (!((point.x+origin.x > GetPosition().x+GetSize().x)
-                              || (point.x+origin.x < GetPosition().x)
-                              || (point.y+origin.y < GetPosition().y-GetSize().y)
-                              || (point.y+origin.y > GetPosition().y)));
-
-    return pointInGraphBox;
-  }
-
-
-  void Draw(){
+    void DrawBox(){
     CalculateVertices();
     BeginTextureMode(frameBuffer);
 
@@ -61,7 +29,7 @@ public:
     EndTextureMode();
   }
 
-  void SetOrigin(int x, int y){
+  void SetOrigin(const int x, const int y){
     if (!originSet) originSet = true;
 
     center = {GetPosition().x+(GetSize().x/2),
@@ -109,6 +77,44 @@ public:
     DrawText(text[3], (origin.x-textSize[3])-textOffset, graphVertices[3].y+textOffset, fontSize, RAYWHITE);
 
     EndTextureMode();
+  }
+
+public:
+  Vector2 center;
+  Vector2 origin;
+
+  Vector2 graphVertices[4];
+
+  void SetPosition(int x, int y){
+    graphBoxPosition = (Vector2){(float)x, (float)y};
+  }
+
+  void SetSize(int x, int y){
+    graphBoxSize = (Vector2){(float)x, (float)y};
+  }
+
+  Vector2 GetPosition(){
+    return graphBoxPosition;
+  }
+
+  Vector2 GetSize(){
+    return graphBoxSize;
+  }
+
+  bool InGraphBox(Vector2 point){
+    bool pointInGraphBox = (!((point.x+origin.x > GetPosition().x+GetSize().x)
+                              || (point.x+origin.x < GetPosition().x)
+                              || (point.y+origin.y < GetPosition().y-GetSize().y)
+                              || (point.y+origin.y > GetPosition().y)));
+
+    return pointInGraphBox;
+  }
+
+  void Draw(const int x, const int y){
+    DrawBox();
+    SetOrigin(x, y);
+    DrawAxis();
+    DrawNumber();
   }
 
 };
