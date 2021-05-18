@@ -4,6 +4,7 @@ namespace py = pybind11;
 
 #include "graph.hpp"
 #include "plotter.hpp"
+#include "graphline.hpp"
 
 PYBIND11_MODULE(PyPlotter, m){
   py::class_<Plotter>(m, "Plotter")
@@ -13,6 +14,11 @@ PYBIND11_MODULE(PyPlotter, m){
   py::class_<Graph>(m, "Graph")
     .def(py::init<const int, const int, const int, const int>())
     .def("draw", &Graph::Draw)
-    .def("calculate", &Graph::Calculate)
-    .def("plot", &Graph::Plot);
+    .def("draw_line", &Graph::DrawLine);
+
+  py::class_<GraphLine>(m, "Line")
+    .def(py::init())
+    .def("calculate", &GraphLine::Calculate)
+    .def("plot", &GraphLine::Plot);
+
 }
