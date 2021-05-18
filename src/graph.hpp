@@ -6,22 +6,11 @@
 
 #include "globals.hpp"
 #include "graphbox.hpp"
+#include "graphline.hpp"
+
 #include "MathParser/include/parser.hpp"
 
 class Graph : public GraphBox{
-private:
-  std::vector<Vector2> points;
-
-  void DrawPoints(){
-    for (int i = 0; i < (int)points.size()-1; i++){
-      if (InGraphBox(points[i]) && InGraphBox(points[i+1])){
-        DrawAroundOrigin(points[i], points[i+1], 3.0f, BLUE);
-      }
-
-    }
-
-  }
-
 
 public:
 
@@ -49,39 +38,15 @@ public:
     EndTextureMode();
   }
 
-  void Calculate(const int range_start, const int range_end, const std::string expr){
+  void DrawLine(GraphLine line){
+    std::vector<Vector2> points = line.GetPoints();
 
-    points.empty();
+    for (int i = 0; i < (int)points.size()-1; i++){
+      if (InGraphBox(points[i]) && InGraphBox(points[i+1])){
+        DrawAroundOrigin(points[i], points[i+1], 3.0f, BLUE);
+      }
 
-    if (range_start == range_end) return;
-
-    int step;
-
-    if (range_start < range_end) step = 1;
-    if (range_start > range_end) step = -1;
-
-    MathParser parser;
-
-    mp_RPN rpn = parser.reversePolishNotation(expr);
-
-    for (int i = range_start; i != range_end; i+=step){
-
-      float x = i;
-
-      parser.appendVariable("x", (double)x);
-
-      float y = -((float)parser.eval(rpn));
-
-      points.push_back((Vector2){x, y});
     }
-
-    DrawPoints();
-
-  }
-
-  void Plot(const int range_start, const int range_end, const std::string expr){
-    Calculate(range_start, range_end, expr);
-    DrawPoints();
   }
 
 };
