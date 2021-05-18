@@ -18,7 +18,7 @@ private:
     graphVertices[3] = (Vector2){graphBoxPosition.x, graphBoxPosition.y-graphBoxSize.y};
   }
 
-    void DrawBox(){
+  void DrawBox(){
     CalculateVertices();
     BeginTextureMode(frameBuffer);
 
