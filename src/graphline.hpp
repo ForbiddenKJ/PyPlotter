@@ -9,6 +9,9 @@ private:
   std::vector<Vector2> points;
 
 public:
+
+  GraphLine(){};
+
   std::vector<Vector2> GetPoints(){ return points; }
 
   void Calculate(const int range_start, const int range_end, const std::string expr){
